@@ -55,3 +55,20 @@ body {
   padding: 2%;
   background-color: #d7a63d;
 }
+.container {
+  display: flex;
+}
+
+.list1, .list2, .list3 {
+  flex: 1;
+  list-style: none;
+  padding: 10px;
+  margin: 0 5px;
+  border: 1px solid #ddd;
+}
+
+.list-head {
+  color: rgba(216, 28, 28, 0.5);
+  background-color:aqua; 
+  font-family: "Source Sans Pro", "Arial", sans-serif;
+}

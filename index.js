@@ -3,6 +3,7 @@ const addTaskForm = document.getElementById("super-hero-search");
 const heroSearch = document.getElementById("hero-search");
 const heroSearchButton = document.getElementById("hero-search-btn");
 const container = document.getElementById("results");
+const homepage = document.getElementById("Marvels-logo");
 
 var theUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916&limit=50`;
 
@@ -11,6 +12,7 @@ fetch(theUrl)
   .then((data) => {
     op = data.data.results;
     console.log(op);
+    
     for (var i = 0; i < op.length; i++) {
       const hero = op[i].name;
       const description = op[i].description;
@@ -37,12 +39,16 @@ fetch(theUrl)
       container.append(templateString);
     }
     // Handle the data here
-  });
+});
+
+homepage.addEventListener("click",function (){
+  location.reload();
+})
 
 heroSearchButton.addEventListener("click", function () {
   var heroSearchInst = heroSearch.value
   console.log(typeof(heroSearchInst),0);
-  emptyResults()
+  emptyResults();
   console.log(heroSearchInst,1);
   var searchString = theUrl +"&nameStartsWith="+heroSearchInst;
   console.log(searchString)
@@ -53,6 +59,8 @@ heroSearchButton.addEventListener("click", function () {
     console.log(data)
     op = data.data.results;
     console.log(op);
+  
+    if(op.length){
     for (var i = 0; i < op.length; i++) {
       const hero = op[i].name;
       const description = op[i].description;
@@ -79,7 +87,18 @@ heroSearchButton.addEventListener("click", function () {
       container.append(templateString);
     }
     // Handle the data here
-  });
+  }
+
+else{
+  const container = $("#results");
+  const templateString = `
+  <div class="alert alert-secondary" role="alert" id="Heros">
+  OOPs! , this Hero does not exists
+</div>
+         
+      `;
+      container.append(templateString);
+}});
    
 });
 
