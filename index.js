@@ -1,4 +1,3 @@
-const todoList = document.getElementById("super-hero-main");
 const addTaskForm = document.getElementById("super-hero-search");
 const heroSearch = document.getElementById("hero-search");
 const heroSearchButton = document.getElementById("hero-search-btn");
@@ -7,12 +6,13 @@ const homepage = document.getElementById("Marvels-logo");
 
 var theUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916&limit=50`;
 
+
 fetch(theUrl)
   .then((response) => response.json())
   .then((data) => {
     op = data.data.results;
     console.log(op);
-    
+
     for (var i = 0; i < op.length; i++) {
       const hero = op[i].name;
       const description = op[i].description;
@@ -21,7 +21,7 @@ fetch(theUrl)
       const container = $("#results");
       const templateString = `
           <div class="card mb-3" style="jumbotron-fluid" id="Heros">
-  <div class="row no-gutters">
+  <div class="row no-gutters">  
     <div class="col-md-4">
       <img src=${image}.jpg class="card-img" alt="place holder for ${hero} image">
     </div>
@@ -29,7 +29,14 @@ fetch(theUrl)
       <div class="card-body">
         <h5 class="card-title">${hero}</h5>
         <p class="card-text">${description}</p>
-        <a href="#" class="btn btn-primary">Go Somewhere</a>
+        <div class="card">
+  <span class="label"><b>Available comics : </b>${op[i].comics.available}</span>
+  <span class="label"><b>Upcoming Events : </b>${op[i].events.available}</span>
+  <span class="label"><b>Available series : </b>${op[i].series.available}</span>
+  <span class="label"><b>Available stories : </b>${op[i].stories.available}</span>
+</div>
+        <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary">Hero Comics</a>
+        <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success">Hero Detail</a>
       </div>
     </div>
   </div>
@@ -39,37 +46,43 @@ fetch(theUrl)
       container.append(templateString);
     }
     // Handle the data here
-});
+  });
 
-homepage.addEventListener("click",function (){
+homepage.addEventListener("click", function () {
   location.reload();
 })
 
-heroSearchButton.addEventListener("click", function () {
-  var heroSearchInst = heroSearch.value
-  console.log(typeof(heroSearchInst),0);
-  emptyResults();
-  console.log(heroSearchInst,1);
-  var searchString = theUrl +"&nameStartsWith="+heroSearchInst;
-  console.log(searchString)
+// Add an event listener for the Enter key
+heroSearch.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    // Get the hero name from the input field
+    const heroSearchInst = heroSearch.value;
 
-  fetch(searchString)
-  .then((response) => response.json())
-  .then((data) => {
-    console.log(data)
-    op = data.data.results;
-    console.log(op);
-  
-    if(op.length){
-    for (var i = 0; i < op.length; i++) {
-      const hero = op[i].name;
-      const description = op[i].description;
-      const image = op[i].thumbnail.path;
+    // Rest of your existing code (fetching data, handling results, etc.)
+    console.log(typeof (heroSearchInst), 0);
+    emptyResults();
+    console.log(heroSearchInst, 1);
+    var searchString = theUrl + "&nameStartsWith=" + heroSearchInst;
+    console.log(searchString)
 
-      const container = $("#results");
-      const templateString = `
+    fetch(searchString)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        op = data.data.results;
+        console.log(op);
+
+        if (op.length) {
+          for (var i = 0; i < op.length; i++) {
+            const hero = op[i].name;
+            const description = op[i].description;
+            const image = op[i].thumbnail.path;
+
+            const container = $("#results");
+            const templateString = `
           <div class="card mb-3" style="jumbotron-fluid" id="Heros">
-  <div class="row no-gutters">
+  <div class="row no-gutters">  
     <div class="col-md-4">
       <img src=${image}.jpg class="card-img" alt="place holder for ${hero} image">
     </div>
@@ -77,33 +90,115 @@ heroSearchButton.addEventListener("click", function () {
       <div class="card-body">
         <h5 class="card-title">${hero}</h5>
         <p class="card-text">${description}</p>
-        <a href="#" class="btn btn-primary">Go Somewhere</a>
+        <div class="card">
+  <span class="label"><b>Available comics : </b>${op[i].comics.available}</span>
+  <span class="label"><b>Upcoming Events : </b>${op[i].events.available}</span>
+  <span class="label"><b>Available series : </b>${op[i].series.available}</span>
+  <span class="label"><b>Available stories : </b>${op[i].stories.available}</span>
+</div>
+        <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary">Hero Comics</a>
+        <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success">Hero Detail</a>
       </div>
     </div>
   </div>
 </div>
          
       `;
-      container.append(templateString);
-    }
-    // Handle the data here
-  }
+            container.append(templateString);
+          }
+          // Handle the data here
+        }
 
-else{
-  const container = $("#results");
-  const templateString = `
+        else {
+          const container = $("#results");
+          const templateString = `
   <div class="alert alert-secondary" role="alert" id="Heros">
   OOPs! , this Hero does not exists
 </div>
          
       `;
-      container.append(templateString);
-}});
-   
+          container.append(templateString);
+        }
+      });
+
+
+    // Clear the input field after processing
+    heroSearch.value = "";
+  }
 });
 
-function emptyResults(){
-  try{
+
+heroSearchButton.addEventListener("click", function () {
+  var heroSearchInst = heroSearch.value
+  console.log(typeof (heroSearchInst), 0);
+  emptyResults();
+  console.log(heroSearchInst, 1);
+  var searchString = theUrl + "&nameStartsWith=" + heroSearchInst;
+  console.log(searchString)
+
+  fetch(searchString)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data)
+      op = data.data.results;
+      console.log(op);
+
+      if (op.length) {
+        for (var i = 0; i < op.length; i++) {
+          const hero = op[i].name;
+          const description = op[i].description;
+          const image = op[i].thumbnail.path;
+
+          const container = $("#results");
+          const templateString = `
+          <div class="card mb-3" style="jumbotron-fluid" id="Heros">
+  <div class="row no-gutters">  
+    <div class="col-md-4">
+      <img src=${image}.jpg class="card-img" alt="place holder for ${hero} image">
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">${hero}</h5>
+        <p class="card-text">${description}</p>
+        <div class="card">
+  <span class="label"><b>Available comics : </b>${op[i].comics.available}</span>
+  <span class="label"><b>Upcoming Events : </b>${op[i].events.available}</span>
+  <span class="label"><b>Available series : </b>${op[i].series.available}</span>
+  <span class="label"><b>Available stories : </b>${op[i].stories.available}</span>
+</div>
+        <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary btn-two">Hero Comics</a>
+        <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success btn-three">Hero Detail</a>
+      </div>
+    </div>
+  </div>
+</div>
+         
+      `;
+          container.append(templateString);
+        }
+        // Handle the data here
+      }
+
+      else {
+        const container = $("#results");
+        const templateString = `
+  <div class="alert alert-secondary" role="alert" id="Heros">
+  OOPs! , this Hero does not exists
+</div>
+         
+      `;
+        container.append(templateString);
+      }
+      // Clear the input field after processing
+      heroSearch.value = "";
+    });
+
+});
+
+
+
+function emptyResults() {
+  try {
     const element = document.getElementById("Heros");
     do {
       const element = document.getElementById("Heros");
@@ -111,10 +206,10 @@ function emptyResults(){
       element.remove();
     } while (element);
   }
-  catch(err) {
+  catch (err) {
     console.log(err)
-  } 
-  
+  }
+
 }
 
 // heroSearchButton.addEventListener("click", function () {
