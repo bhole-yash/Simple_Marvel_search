@@ -81,29 +81,29 @@ heroSearch.addEventListener("keydown", (event) => {
 
             const container = $("#results");
             const templateString = `
-          <div class="card mb-3" style="jumbotron-fluid" id="Heros">
-  <div class="row no-gutters">  
-    <div class="col-md-4">
-      <img src=${image}.jpg class="card-img" alt="place holder for ${hero} image">
-    </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title">${hero}</h5>
-        <p class="card-text">${description}</p>
-        <div class="card">
-  <span class="label"><b>Available comics : </b>${op[i].comics.available}</span>
-  <span class="label"><b>Upcoming Events : </b>${op[i].events.available}</span>
-  <span class="label"><b>Available series : </b>${op[i].series.available}</span>
-  <span class="label"><b>Available stories : </b>${op[i].stories.available}</span>
-</div>
-        <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary">Hero Comics</a>
-        <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success">Hero Detail</a>
+            <div class="card mb-3" style="jumbotron-fluid" id="Heros">
+    <div class="row no-gutters">  
+      <div class="col-md-4">
+        <img src=${image}.jpg class="card-img" alt="place holder for ${hero} image">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h5 class="card-title">${hero}</h5>
+          <p class="card-text">${description}</p>
+          <div class="card">
+    <span class="label"><b>Available comics : </b>${op[i].comics.available}</span>
+    <span class="label"><b>Upcoming Events : </b>${op[i].events.available}</span>
+    <span class="label"><b>Available series : </b>${op[i].series.available}</span>
+    <span class="label"><b>Available stories : </b>${op[i].stories.available}</span>
+  </div>
+          <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary">Hero Comics</a>
+          <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success">Hero Detail</a>
+        </div>
       </div>
     </div>
   </div>
-</div>
-         
-      `;
+           
+        `;
             container.append(templateString);
           }
           // Handle the data here
@@ -165,9 +165,11 @@ heroSearchButton.addEventListener("click", function () {
   <span class="label"><b>Upcoming Events : </b>${op[i].events.available}</span>
   <span class="label"><b>Available series : </b>${op[i].series.available}</span>
   <span class="label"><b>Available stories : </b>${op[i].stories.available}</span>
-</div>
-        <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary btn-two">Hero Comics</a>
-        <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success btn-three">Hero Detail</a>
+  </div>
+          <div class="Button-grp">
+        <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary">Hero Comics</a>
+        <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success">Hero Detail</a>
+        </div>
       </div>
     </div>
   </div>
