@@ -4,217 +4,173 @@ const heroSearchButton = document.getElementById("hero-search-btn");
 const container = document.getElementById("results");
 const homepage = document.getElementById("Marvels-logo");
 
-var theUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916&limit=50`;
+// Function to add a hero to favorites
+function addToFavorites(heroName) {
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  favorites.push(heroName);
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+}
 
+// Function to remove a hero from favorites
+function removeFromFavorites(heroName) {
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  favorites = favorites.filter((name) => name !== heroName);
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+}
 
-fetch(theUrl)
-  .then((response) => response.json())
-  .then((data) => {
-    op = data.data.results;
-    console.log(op);
+// Function to check if a hero is in favorites
+function isFavorite(heroName) {
+  let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+  return favorites.includes(heroName);
+}
 
-    for (var i = 0; i < op.length; i++) {
-      const hero = op[i].name;
-      const description = op[i].description;
-      const image = op[i].thumbnail.path;
+// Function to update favorite button UI
+function updateFavoriteButton(heroName) {
+  const favoriteButton = document.getElementById(`favorite-button-${heroName}`);
+  if (isFavorite(heroName)) {
+    favoriteButton.innerText = "Unlike";
+    favoriteButton.classList.remove("btn-outline-danger");
+    favoriteButton.classList.add("btn-danger");
+  } else {
+    favoriteButton.innerText = "Like";
+    favoriteButton.classList.remove("btn-dark");
+    favoriteButton.classList.add("btn-outline-dark");
+  }
+}
 
-      const container = $("#results");
-      const templateString = `
-          <div class="card mb-3" style="jumbotron-fluid" id="Heros">
-  <div class="row no-gutters">  
-    <div class="col-md-4">
-      <img src=${image}.jpg class="card-img" alt="place holder for ${hero} image">
-    </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title">${hero}</h5>
-        <p class="card-text">${description}</p>
-        <div class="card">
-  <span class="label"><b>Available comics : </b>${op[i].comics.available}</span>
-  <span class="label"><b>Upcoming Events : </b>${op[i].events.available}</span>
-  <span class="label"><b>Available series : </b>${op[i].series.available}</span>
-  <span class="label"><b>Available stories : </b>${op[i].stories.available}</span>
-</div>
-        <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary">Hero Comics</a>
-        <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success">Hero Detail</a>
-      </div>
-    </div>
-  </div>
-</div>
-         
-      `;
-      container.append(templateString);
-    }
-    // Handle the data here
-  });
-
+// Handle homepage click
 homepage.addEventListener("click", function () {
   location.reload();
-})
+});
 
-// Add an event listener for the Enter key
+// Handle search input keydown
 heroSearch.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
-    // Get the hero name from the input field
-    const heroSearchInst = heroSearch.value;
-
-    // Rest of your existing code (fetching data, handling results, etc.)
-    console.log(typeof (heroSearchInst), 0);
+    const heroSearchInst = heroSearch.value.trim();
     emptyResults();
-    console.log(heroSearchInst, 1);
-    var searchString = theUrl + "&nameStartsWith=" + heroSearchInst;
-    console.log(searchString)
-
-    fetch(searchString)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data)
-        op = data.data.results;
-        console.log(op);
-
-        if (op.length) {
-          for (var i = 0; i < op.length; i++) {
-            const hero = op[i].name;
-            const description = op[i].description;
-            const image = op[i].thumbnail.path;
-
-            const container = $("#results");
-            const templateString = `
-            <div class="card mb-3" style="jumbotron-fluid" id="Heros">
-    <div class="row no-gutters">  
-      <div class="col-md-4">
-        <img src=${image}.jpg class="card-img" alt="place holder for ${hero} image">
-      </div>
-      <div class="col-md-8">
-        <div class="card-body">
-          <h5 class="card-title">${hero}</h5>
-          <p class="card-text">${description}</p>
-          <div class="card">
-    <span class="label"><b>Available comics : </b>${op[i].comics.available}</span>
-    <span class="label"><b>Upcoming Events : </b>${op[i].events.available}</span>
-    <span class="label"><b>Available series : </b>${op[i].series.available}</span>
-    <span class="label"><b>Available stories : </b>${op[i].stories.available}</span>
-  </div>
-          <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary">Hero Comics</a>
-          <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success">Hero Detail</a>
-        </div>
-      </div>
-    </div>
-  </div>
-           
-        `;
-            container.append(templateString);
-          }
-          // Handle the data here
-        }
-
-        else {
-          const container = $("#results");
-          const templateString = `
-  <div class="alert alert-secondary" role="alert" id="Heros">
-  OOPs! , this Hero does not exists
-</div>
-         
-      `;
-          container.append(templateString);
-        }
-      });
-
-
-    // Clear the input field after processing
+    if (heroSearchInst == "") {
+      const templateString = `
+      <div class="alert alert-secondary" role="alert">
+        Oops! Try putting something in :(
+      </div>`;
+      container.insertAdjacentHTML("beforeend", templateString);
+    }
+    const searchString = theUrl + "&nameStartsWith=" + heroSearchInst;
+    fetchAndDisplayResults(searchString);
     heroSearch.value = "";
   }
 });
 
-
+// Handle search button click
 heroSearchButton.addEventListener("click", function () {
-  var heroSearchInst = heroSearch.value
-  console.log(typeof (heroSearchInst), 0);
+  const heroSearchInst = heroSearch.value.trim();
   emptyResults();
-  console.log(heroSearchInst, 1);
-  var searchString = theUrl + "&nameStartsWith=" + heroSearchInst;
-  console.log(searchString)
+  if (heroSearchInst == "") {
+    const templateString = `
+    <div class="alert alert-secondary" role="alert">
+      Oops! Try putting something in :(
+    </div>`;
+    container.insertAdjacentHTML("beforeend", templateString);
+  }
 
+  const searchString = theUrl + "&nameStartsWith=" + heroSearchInst;
+  if (searchString == "") {
+    location.reload();
+  }
+  fetchAndDisplayResults(searchString);
+  heroSearch.value = "";
+});
+
+// Function to fetch and display search results
+function fetchAndDisplayResults(searchString) {
   fetch(searchString)
     .then((response) => response.json())
     .then((data) => {
-      console.log(data)
-      op = data.data.results;
-      console.log(op);
+      const heroes = data.data.results;
 
-      if (op.length) {
-        for (var i = 0; i < op.length; i++) {
-          const hero = op[i].name;
-          const description = op[i].description;
-          const image = op[i].thumbnail.path;
-
-          const container = $("#results");
+      if (heroes.length) {
+        heroes.forEach((hero) => {
           const templateString = `
-          <div class="card mb-3" style="jumbotron-fluid" id="Heros">
-  <div class="row no-gutters">  
-    <div class="col-md-4">
-      <img src=${image}.jpg class="card-img" alt="place holder for ${hero} image">
-    </div>
-    <div class="col-md-8">
-      <div class="card-body">
-        <h5 class="card-title">${hero}</h5>
-        <p class="card-text">${description}</p>
-        <div class="card">
-  <span class="label"><b>Available comics : </b>${op[i].comics.available}</span>
-  <span class="label"><b>Upcoming Events : </b>${op[i].events.available}</span>
-  <span class="label"><b>Available series : </b>${op[i].series.available}</span>
-  <span class="label"><b>Available stories : </b>${op[i].stories.available}</span>
-  </div>
-          <div class="Button-grp">
-        <a href="${op[i].urls[1].url}" target="_blank" class="btn btn-primary">Hero Comics</a>
-        <a href="${op[i].urls[0].url}" target="_blank" class="btn btn-success">Hero Detail</a>
-        </div>
-      </div>
-    </div>
-  </div>
+            <div class="card mb-3" style="jumbotron-fluid" id="hero-${
+              hero.name
+            }">
+              <div class="row no-gutters">
+                <div class="col-md-4">
+                  <img src="${
+                    hero.thumbnail.path
+                  }.jpg" class="card-img" alt="placeholder for ${
+            hero.name
+          } image">
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                  <div class="d-flex">
+  <div class="p-2"><h5 class="card-title">${hero.name}</h5></div>
+  <div class="ml-auto p-2"><button id="favorite-button-${
+    hero.name
+  }" class="btn btn-outline-danger bookmark" style="border-width: thick;width:min-content;">${
+            isFavorite(hero.name) ? "Unlike" : "Like"
+          }</button></div>
 </div>
-         
-      `;
-          container.append(templateString);
-        }
-        // Handle the data here
-      }
+                    
+                    
+                    <p class="card-text">${hero.description}</p>
+                    <div class="card">
+                      <span class="label"><b>Available comics : </b>${
+                        hero.comics.available
+                      }</span>
+                      <span class="label"><b>Upcoming Events : </b>${
+                        hero.events.available
+                      }</span>
+                      <span class="label"><b>Available series : </b>${
+                        hero.series.available
+                      }</span>
+                      <span class="label"><b>Available stories : </b>${
+                        hero.stories.available
+                      }</span>
+                    </div>
+                    
+                      <a href="${
+                        hero.urls[1].url
+                      }" target="_blank" class="btn btn-primary">Hero Comics</a>
+                      <a href="${
+                        hero.urls[0].url
+                      }" target="_blank" class="btn btn-success">Hero Detail</a>
+                      
+                  </div>
+                </div>
+              </div>
+            </div>`;
+          container.insertAdjacentHTML("beforeend", templateString);
 
-      else {
-        const container = $("#results");
+          // Add event listener to favorite button
+          const favoriteButton = document.getElementById(
+            `favorite-button-${hero.name}`
+          );
+          favoriteButton.addEventListener("click", function () {
+            if (isFavorite(hero.name)) {
+              removeFromFavorites(hero.name);
+            } else {
+              addToFavorites(hero.name);
+            }
+            updateFavoriteButton(hero.name);
+          });
+        });
+      } else {
         const templateString = `
-  <div class="alert alert-secondary" role="alert" id="Heros">
-  OOPs! , this Hero does not exists
-</div>
-         
-      `;
-        container.append(templateString);
+          <div class="alert alert-secondary" role="alert">
+            Oops! This hero does not exist.
+          </div>`;
+        container.insertAdjacentHTML("beforeend", templateString);
       }
-      // Clear the input field after processing
-      heroSearch.value = "";
     });
-
-});
-
-
-
-function emptyResults() {
-  try {
-    const element = document.getElementById("Heros");
-    do {
-      const element = document.getElementById("Heros");
-      // console.log(element);
-      element.remove();
-    } while (element);
-  }
-  catch (err) {
-    console.log(err)
-  }
-
 }
 
-// heroSearchButton.addEventListener("click", function () {
-//   var heroSearchInst = heroSearch.value.trim;
-//   console.log(heroSearchInst);
-// });
+// Empty existing results
+function emptyResults() {
+  container.innerHTML = "";
+}
+var theUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916&limit=50`;
+// Initial fetch and display results
+fetchAndDisplayResults(theUrl);
