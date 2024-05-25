@@ -5,29 +5,29 @@ const container = document.getElementById("results");
 const homepage = document.getElementById("Marvels-logo");
 
 // Function to add a hero to favorites
-function addToFavorites(heroName) {
+function addToFavorites(heroId) {
   let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-  favorites.push(heroName);
+  favorites.push(heroId);
   localStorage.setItem("favorites", JSON.stringify(favorites));
 }
 
 // Function to remove a hero from favorites
-function removeFromFavorites(heroName) {
+function removeFromFavorites(heroId) {
   let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-  favorites = favorites.filter((name) => name !== heroName);
+  favorites = favorites.filter((fav_id) => fav_id !== heroId);
   localStorage.setItem("favorites", JSON.stringify(favorites));
 }
 
 // Function to check if a hero is in favorites
-function isFavorite(heroName) {
+function isFavorite(heroId) {
   let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-  return favorites.includes(heroName);
+  return favorites.includes(heroId);
 }
 
 // Function to update favorite button UI
-function updateFavoriteButton(heroName) {
-  const favoriteButton = document.getElementById(`favorite-button-${heroName}`);
-  if (isFavorite(heroName)) {
+function updateFavoriteButton(heroId) {
+  const favoriteButton = document.getElementById(`favorite-button-${heroId}`);
+  if (isFavorite(heroId)) {
     favoriteButton.innerText = "Unlike";
     favoriteButton.classList.remove("btn-outline-danger");
     favoriteButton.classList.add("btn-danger");
@@ -88,7 +88,7 @@ function fetchAndDisplayResults(searchString) {
     .then((response) => response.json())
     .then((data) => {
       const heroes = data.data.results;
-
+      console.log(heroes);
       if (heroes.length) {
         heroes.forEach((hero) => {
           const templateString = `
@@ -108,9 +108,9 @@ function fetchAndDisplayResults(searchString) {
                   <div class="d-flex">
   <div class="p-2"><h5 class="card-title">${hero.name}</h5></div>
   <div class="ml-auto p-2"><button id="favorite-button-${
-    hero.name
+    hero.id
   }" class="btn btn-outline-danger bookmark" style="border-width: thick;width:min-content;">${
-            isFavorite(hero.name) ? "Unlike" : "Like"
+            isFavorite(hero.id) ? "Unlike" : "Like"
           }</button></div>
 </div>
                     
@@ -146,15 +146,15 @@ function fetchAndDisplayResults(searchString) {
 
           // Add event listener to favorite button
           const favoriteButton = document.getElementById(
-            `favorite-button-${hero.name}`
+            `favorite-button-${hero.id}`
           );
           favoriteButton.addEventListener("click", function () {
-            if (isFavorite(hero.name)) {
-              removeFromFavorites(hero.name);
+            if (isFavorite(hero.id)) {
+              removeFromFavorites(hero.id);
             } else {
-              addToFavorites(hero.name);
+              addToFavorites(hero.id);
             }
-            updateFavoriteButton(hero.name);
+            updateFavoriteButton(hero.id);
           });
         });
       } else {
