@@ -23,7 +23,122 @@
     />
   </head>
   <body>
-    <h1>Hello World!</h1>
+    <nav class="navbar navbar-expand-lg navbar-success bg-primary">
+      <a class="navbar-brand" href="#"
+        ><img
+          id="Marvels-logo"
+          src="./Marvel-Logo-2000-2012.png"
+          alt="Marvels Logo"
+          draggable="false"
+          height="30"
+      /></a>
+      <h1 class="Title-description col-8 d-flex mb-3">Super Hero Search</h1>
+
+      <div class="ml-auto p-3"><a href="./favourite.html"><button id="favorite-section"  class="btn btn-warning" style="border-width: thick;width:min-content;">Favorites</button></a></div>
+    </div>
+    </nav>
+    <div class="align-self-start" id="fav-results"></div>
+    <script>
+      favorites_array=JSON.parse(localStorage.favorites);
+      const fav_container = document.getElementById("fav-results");
+      console.log(favorites_array);
+      if (favorites_array.length>0) {
+        console.log(favorites_array);  
+        const templateString = `
+    <div class="alert alert-danger display-3" role="alert">
+      Here are your favorites!
+    </div>`;
+    fav_container.insertAdjacentHTML("beforeend", templateString);
+        for (var i=0;i<favorites_array.length;i++){
+          fetch(`http://gateway.marvel.com/v1/public/characters/`+String(favorites_array[i])+`?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916`)
+    .then((response) => response.json())
+    .then((data) => {
+      const heros = data.data.results;
+      console.log(heros);
+    
+      heros.forEach((hero) => {
+          var templateString = `
+            <div class="card mb-3" style="jumbotron-fluid" id="hero-${
+              hero.name
+            }">
+              <div class="row no-gutters">
+                <div class="col-md-4">
+                  <img src="${
+                    hero.thumbnail.path
+                  }.jpg" class="card-img" alt="placeholder for ${
+            hero.name
+          } image">
+                </div>
+                <div class="col-md-8">
+                  <div class="card-body">
+                  <div class="d-flex">
+  <div class="p-2"><h5 class="card-title">${hero.name}</h5></div>
+  <div class="ml-auto p-2"><button id="favorite-button-${
+    hero.id
+  }" class="btn btn-outline-danger bookmark" style="border-width: thick;width:min-content;">${
+            isFavorite(hero.id) ? "Unlike" : "Like"
+          }</button></div>
+</div>
+                    
+                    
+                    <p class="card-text">${hero.description}</p>
+                    <div class="card">
+                      <span class="label"><b>Available comics : </b>${
+                        hero.comics.available
+                      }</span>
+                      <span class="label"><b>Upcoming Events : </b>${
+                        hero.events.available
+                      }</span>
+                      <span class="label"><b>Available series : </b>${
+                        hero.series.available
+                      }</span>
+                      <span class="label"><b>Available stories : </b>${
+                        hero.stories.available
+                      }</span>
+                    </div>
+                    
+                      <a href="${
+                        hero.urls[1].url
+                      }" target="_blank" class="btn btn-primary">Hero Comics</a>
+                      <a href="${
+                        hero.urls[0].url
+                      }" target="_blank" class="btn btn-success">Hero Detail</a>
+                      
+                  </div>
+                </div>
+              </div>
+            </div>`;
+            fav_container.insertAdjacentHTML("beforeend", templateString);
+          // Add event listener to favorite button
+          const favoriteButton = document.getElementById(
+            `favorite-button-${hero.id}`
+          );
+          favoriteButton.addEventListener("click", function () {
+            if (isFavorite(hero.id)) {
+              removeFromFavorites(hero.id);
+            } else {
+              addToFavorites(hero.id);
+            }
+            updateFavoriteButton(hero.id);
+          });
+        
+
+        });
+    })
+
+        }
+    
+  }
+  else{
+    const templateString = `
+    <div class="alert alert-secondary display-4" role="alert">
+      Seems like you dont have any favorites yet :(
+    </div>`;
+    fav_container.insertAdjacentHTML("beforeend", templateString);
+  }
+  
+    </script>
+    
     <script src="index.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
