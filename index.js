@@ -40,7 +40,7 @@ function updateFavoriteButton(heroId) {
 
 // Handle homepage click
 homepage.addEventListener("click", function () {
-  location.reload();
+  window.location.assign("./index.html");
 });
 
 // Handle search input keydown
