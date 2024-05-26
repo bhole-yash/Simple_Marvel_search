@@ -157,3 +157,7 @@ body {
 .bookmark {
   padding-left: 20px;
 }
+
+.fav_sections {
+  background-color: rgba(243, 190, 18, 0.774) !important;
+}
