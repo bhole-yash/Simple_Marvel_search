@@ -50,7 +50,7 @@
     </div>`;
     fav_container.insertAdjacentHTML("beforeend", templateString);
         for (var i=0;i<favorites_array.length;i++){
-          fetch(`http://gateway.marvel.com/v1/public/characters/`+String(favorites_array[i])+`?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916`)
+          fetch(`https://gateway.marvel.com/v1/public/characters/`+String(favorites_array[i])+`?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916`)
     .then((response) => response.json())
     .then((data) => {
       const heros = data.data.results;
