@@ -3,6 +3,7 @@ const heroSearch = document.getElementById("hero-search");
 const heroSearchButton = document.getElementById("hero-search-btn");
 const container = document.getElementById("results");
 const homepage = document.getElementById("Marvels-logo");
+const suggestionsContainer = document.getElementById("suggestions");
 
 // Function to add a hero to favorites
 function addToFavorites(heroId) {
@@ -47,40 +48,32 @@ homepage.addEventListener("click", function () {
 heroSearch.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
     event.preventDefault();
-    const heroSearchInst = heroSearch.value.trim();
-    emptyResults();
-    if (heroSearchInst == "") {
-      const templateString = `
-      <div class="alert alert-secondary" role="alert">
-        Oops! Try putting something in :(
-      </div>`;
-      container.insertAdjacentHTML("beforeend", templateString);
-    }
-    const searchString = theUrl + "&nameStartsWith=" + heroSearchInst;
-    fetchAndDisplayResults(searchString);
-    heroSearch.value = "";
+    performSearch();
   }
 });
 
 // Handle search button click
 heroSearchButton.addEventListener("click", function () {
+  performSearch();
+});
+
+// Perform search
+function performSearch() {
   const heroSearchInst = heroSearch.value.trim();
   emptyResults();
   if (heroSearchInst == "") {
     const templateString = `
-    <div class="alert alert-secondary" role="alert">
-      Oops! Try putting something in :(
-    </div>`;
+      <div class="alert alert-secondary" role="alert">
+        Oops! Try putting something in :(
+      </div>`;
     container.insertAdjacentHTML("beforeend", templateString);
+    return;
   }
-
   const searchString = theUrl + "&nameStartsWith=" + heroSearchInst;
-  if (searchString == "") {
-    location.reload();
-  }
   fetchAndDisplayResults(searchString);
   heroSearch.value = "";
-});
+  suggestionsContainer.innerHTML = "";
+}
 
 // Function to fetch and display search results
 function fetchAndDisplayResults(searchString) {
@@ -105,16 +98,16 @@ function fetchAndDisplayResults(searchString) {
                 </div>
                 <div class="col-md-8">
                   <div class="card-body">
-                  <div class="d-flex">
-  <div class="p-2"><h5 class="card-title">${hero.name}</h5></div>
-  <div class="ml-auto p-2"><button id="favorite-button-${
-    hero.id
-  }" class="btn btn-outline-danger bookmark" style="border-width: thick;width:min-content;">${
+                    <div class="d-flex">
+                      <div class="p-2"><h5 class="card-title">${
+                        hero.name
+                      }</h5></div>
+                      <div class="ml-auto p-2"><button id="favorite-button-${
+                        hero.id
+                      }" class="btn btn-outline-danger bookmark" style="border-width: thick;width:min-content;">${
             isFavorite(hero.id) ? "Unlike" : "Like"
           }</button></div>
-</div>
-                    
-                    
+                    </div>
                     <p class="card-text">${hero.description}</p>
                     <div class="card">
                       <span class="label"><b>Available comics : </b>${
@@ -130,14 +123,12 @@ function fetchAndDisplayResults(searchString) {
                         hero.stories.available
                       }</span>
                     </div>
-                    
-                      <a href="${
-                        hero.urls[1].url
-                      }" target="_blank" class="btn btn-primary">Hero Comics</a>
-                      <a href="${
-                        hero.urls[0].url
-                      }" target="_blank" class="btn btn-success">Hero Detail</a>
-                      
+                    <a href="${
+                      hero.urls[1].url
+                    }" target="_blank" class="btn btn-primary">Hero Comics</a>
+                    <a href="${
+                      hero.urls[0].url
+                    }" target="_blank" class="btn btn-success">Hero Detail</a>
                   </div>
                 </div>
               </div>
@@ -171,6 +162,37 @@ function fetchAndDisplayResults(searchString) {
 function emptyResults() {
   container.innerHTML = "";
 }
+
+// Fetch and display suggestions
+heroSearch.addEventListener("input", () => {
+  const query = heroSearch.value.trim();
+  if (query.length < 2) {
+    suggestionsContainer.innerHTML = "";
+    return;
+  }
+  const suggestionUrl = theUrl + "&nameStartsWith=" + query;
+  fetch(suggestionUrl)
+    .then((response) => response.json())
+    .then((data) => {
+      const suggestions = data.data.results;
+      suggestionsContainer.innerHTML = "";
+      suggestions.forEach((hero) => {
+        const suggestionItem = document.createElement("li");
+        suggestionItem.classList.add(
+          "list-group-item",
+          "list-group-item-action"
+        );
+        suggestionItem.textContent = hero.name;
+        suggestionItem.addEventListener("click", () => {
+          heroSearch.value = hero.name;
+          suggestionsContainer.innerHTML = "";
+          performSearch();
+        });
+        suggestionsContainer.appendChild(suggestionItem);
+      });
+    });
+});
+
 var theUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916&limit=50`;
 // Initial fetch and display results
 fetchAndDisplayResults(theUrl);

@@ -4,13 +4,13 @@ body {
   font-family: sans-serif;
   width: 100%;
   height: 100%;
-
   font-family: "Open Sans Condensed", sans-serif;
 }
 
 .Title-description {
   font-family: "Lobster", sans-serif;
 }
+
 #super-hero-main {
   list-style: none;
   padding: 0;
@@ -39,6 +39,7 @@ body {
   display: flex;
   margin-top: 20px;
   padding: 10px;
+  position: relative;
 }
 
 #hero-search {
@@ -61,6 +62,7 @@ body {
   padding: 2%;
   background-color: #d7a63d;
 }
+
 .container {
   display: flex;
 }
@@ -160,4 +162,62 @@ body {
 
 .fav_sections {
   background-color: rgba(243, 190, 18, 0.774) !important;
+}
+
+/* New styles for suggestions */
+#suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background-color: white;
+  z-index: 1000;
+}
+
+#suggestions li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+#suggestions li:hover {
+  background-color: #f0f0f0;
+}
+
+/* New styles for favorites */
+#fav-results {
+  padding: 20px;
+  background-color: #fff;
+}
+
+#fav-results .card {
+  margin-bottom: 20px;
+}
+
+#fav-results .card img {
+  max-width: 100%;
+  height: auto;
+}
+
+#fav-results .card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#fav-results .card-body .d-flex {
+  align-items: center;
+}
+
+#fav-results .card-body .d-flex .p-2 {
+  margin-right: 10px;
+}
+
+#fav-results .card-body .d-flex .ml-auto {
+  margin-left: auto;
 }
