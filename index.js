@@ -4,9 +4,6 @@ const heroSearchButton = document.getElementById("hero-search-btn");
 const container = document.getElementById("results");
 const homepage = document.getElementById("Marvels-logo");
 const suggestionsContainer = document.getElementById("suggestions");
-import { apiKey as _apiKey, hash as _hash, ts as _ts, baseUrl as _baseUrl } from './config.js';
-
-
 
 // Function to add a hero to favorites
 function addToFavorites(heroId) {
@@ -160,7 +157,7 @@ function fetchAndDisplayResults(searchString) {
       }
     });
 }
-var theUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916&limit=50`;
+
 // Empty existing results
 function emptyResults() {
   container.innerHTML = "";
@@ -196,6 +193,6 @@ heroSearch.addEventListener("input", () => {
     });
 });
 
-// const the_Url = `${baseUrl}?apikey=${apiKey}&hash=${hash}&ts=${ts}&limit=50`;
+var theUrl = `https://gateway.marvel.com:443/v1/public/characters?apikey=6ad77fac798bfe0a9c8599316689f1e6&hash=37a360b04ff2f9c78bd5eefe585dcdea&ts=1711821478916&limit=50`;
 // Initial fetch and display results
 fetchAndDisplayResults(theUrl);
